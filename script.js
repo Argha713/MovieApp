@@ -162,6 +162,19 @@ function getMovies(url) {
             nextPage = currentPage + 1;
             priviousPage = currentPage - 1;
             totalPages = data.total_pages;
+
+            currentPageElement.innerText = currentPage;
+            if(currentPage<=1){
+                priviousPageElement.classList.add('disabled');
+                nextPageElement.classList.remove('disabled');
+            }else if(currentPage >= totalPages){
+                priviousPageElement.classList.remove('disabled');
+                nextPageElement.classList.add('disabled');
+            }else{
+                priviousPageElement.classList.remove('disabled');
+                nextPageElement.classList.remove('disabled');
+            }
+            search.scrollIntoView({behavior:'smooth'});
         }else{
             main.innerHTML = `<h1 class="no-results">No Result Found</h1>`
         }
@@ -172,7 +185,7 @@ function getMovies(url) {
 function showMovies(data) {
     main.innerHTML = '';
     data.forEach(movie => {
-        const{title,poster_path, vote_average, overview} = movie;
+        const{title,poster_path, vote_average, overview, id} = movie;
         const movieCard = document.createElement('div');
         movieCard.classList.add('movie');
         movieCard.innerHTML=`
@@ -184,9 +197,16 @@ function showMovies(data) {
             <div class="overview">
                 <h3>Overview</h3>
                 ${overview}
+                <br/>
+                <button class="know-more" id=${id} >Know More</button>
             </div>        
         `
         main.appendChild(movieCard);
+
+        document.getElementById(id).addEventListener('click', ()=>{
+            console.log(id);
+            openNav();
+        })
     });
 }
 
@@ -221,6 +241,12 @@ nextPageElement.addEventListener('click', ()=>{
     }
 })
 
+priviousPageElement.addEventListener('click', ()=>{
+    if(priviousPage > 0){
+        pageCall(priviousPage);
+    }
+})
+
 function pageCall(page) {
     let urlSplit = lastUrl.split('?');
     let queryParams = urlSplit[1].split('&');
@@ -235,6 +261,17 @@ function pageCall(page) {
         queryParams[queryParams.length - 1] = paginationUrl;
         let queryParamUrl = queryParams.join('&');
         let url = urlSplit[0] +'?'+ queryParamUrl;
-        getMovies(url);
+        getMovies(url); 
     }
 }
+
+
+/* Open when someone clicks on the span element */
+function openNav() {
+    document.getElementById("myNav").style.width = "100%";
+  }
+  
+  /* Close when someone clicks on the "x" symbol inside the overlay */
+  function closeNav() {
+    document.getElementById("myNav").style.width = "0%";
+  }
