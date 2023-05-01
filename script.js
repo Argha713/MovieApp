@@ -11,7 +11,7 @@ const genreTagElement =  document.getElementById('tags');
 const priviousPageElement = document.getElementById('privious');
 const currentPageElement = document.getElementById('current');
 const nextPageElement = document.getElementById('next');
-
+const trailerContener = document.getElementById('overlay-content');
 
 
 var currentPage = 1;
@@ -184,6 +184,7 @@ function getMovies(url) {
 
 function showMovies(data) {
     main.innerHTML = '';
+	console.log(data.results);
     data.forEach(movie => {
         const{title,poster_path, vote_average, overview, id} = movie;
         const movieCard = document.createElement('div');
@@ -205,7 +206,7 @@ function showMovies(data) {
 
         document.getElementById(id).addEventListener('click', ()=>{
             console.log(id);
-            openNav();
+            openNav(movie);
         })
     });
 }
@@ -267,8 +268,34 @@ function pageCall(page) {
 
 
 /* Open when someone clicks on the span element */
-function openNav() {
-    document.getElementById("myNav").style.width = "100%";
+function openNav(movie) {
+	let id = movie.id;
+	fetch(Base_Url+'/movie/'+id+'/videos?'+API_KEY)
+	.then(response => response.json())
+	.then(videoData => {
+		console.log(videoData);
+		if(videoData){
+			document.getElementById("myNav").style.width = "100%";
+			if(videoData.results.length > 0){
+				var embed = [];
+				videoData.results.forEach(video => {
+					let {key, site, name} = video;
+					if(site == 'YouTube'){
+						embed.push(`
+							<iframe width="560" height="315" src="https://www.youtube.com/embed/${key}"
+							title="${name}" frameborder="0" 
+							allow="accelerometer; autoplay; clipboard-write; 
+							encrypted-media; gyroscope; picture-in-picture; 
+							web-share" allowfullscreen></iframe>					
+						`)
+					}					
+				})
+				trailerContener.innerHTML = embed.join('');
+			}else{
+				trailerContener.innerHTML = `<h1 class="no-results">No Result Found</h1>`;
+			}
+		}
+	})
   }
   
   /* Close when someone clicks on the "x" symbol inside the overlay */
