@@ -12,6 +12,8 @@ const priviousPageElement = document.getElementById('privious');
 const currentPageElement = document.getElementById('current');
 const nextPageElement = document.getElementById('next');
 const trailerContener = document.getElementById('overlay-content');
+const leftTrailerArrow = document.getElementById('left-arrow');
+const rightTrailerArrow = document.getElementById('right-arrow');
 
 
 var currentPage = 1;
@@ -19,6 +21,8 @@ var nextPage = 2;
 var priviousPage = 1;
 var lastUrl = '';
 var totalPages = 100;
+var activeTrailerSlide = 0;
+var totalTrailerVideos = 0;
 
 var selectedGenreArr = [];
 const genreArr = [
@@ -283,14 +287,16 @@ function openNav(movie) {
 					if(site == 'YouTube'){
 						embed.push(`
 							<iframe width="560" height="315" src="https://www.youtube.com/embed/${key}"
-							title="${name}" frameborder="0" 
+							title="${name}" class="embed hide" frameborder="0" 
 							allow="accelerometer; autoplay; clipboard-write; 
 							encrypted-media; gyroscope; picture-in-picture; 
 							web-share" allowfullscreen></iframe>					
 						`)
 					}					
-				})
+				})				
 				trailerContener.innerHTML = embed.join('');
+				activeTrailerSlide = 0;
+				showTrailer();
 			}else{
 				trailerContener.innerHTML = `<h1 class="no-results">No Result Found</h1>`;
 			}
@@ -302,3 +308,44 @@ function openNav(movie) {
   function closeNav() {
     document.getElementById("myNav").style.width = "0%";
   }
+  
+  
+  function showTrailer(){
+	  let allTrailer = document.querySelectorAll('.embed');	  
+	  console.log(allTrailer);
+	  totalTrailerVideos = allTrailer.length;
+	  allTrailer.forEach((trailer, index)=> {
+		  if(activeTrailerSlide == index){
+			  console.log('2');
+			  trailer.classList.remove('hide');
+			  trailer.classList.add('show');
+		  }else{
+			   trailer.classList.add('hide');
+			  trailer.classList.remove('show');
+		  }
+	  })
+  }
+  
+  leftTrailerArrow.addEventListener('click', ()=>{
+	  if(activeTrailerSlide > 0){
+		  activeTrailerSlide --;
+	  }else{
+		  activeTrailerSlide = totalTrailerVideos - 1;
+	  }
+	  showTrailer();
+  })
+  
+  rightTrailerArrow.addEventListener('click', ()=>{
+	  if(activeTrailerSlide < (totalTrailerVideos - 1)){
+		  activeTrailerSlide ++;
+	  }else{
+		  activeTrailerSlide = 0;
+	  }
+	  showTrailer();
+  })
+  
+  
+  
+  
+  
+  
